@@ -85,6 +85,35 @@ export interface ShellInfo {
 }
 
 // =============================================================================
+// Architecture / Technical Decisions
+// =============================================================================
+
+export interface TechStackItem {
+  category: string
+  name: string
+  details?: string
+}
+
+export interface ArchitectureDecision {
+  title: string
+  context: string
+  decision: string
+  consequences: string
+}
+
+export interface IntegrationNote {
+  category: string
+  items: string[]
+}
+
+export interface TechDecisions {
+  raw: string
+  techStack: TechStackItem[]
+  decisions: ArchitectureDecision[]
+  integrations: IntegrationNote[]
+}
+
+// =============================================================================
 // Combined Product Data
 // =============================================================================
 
@@ -94,4 +123,5 @@ export interface ProductData {
   dataShape: DataShape | null
   designSystem: DesignSystem | null
   shell: ShellInfo | null
+  architecture: TechDecisions | null
 }

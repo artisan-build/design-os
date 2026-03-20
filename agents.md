@@ -49,7 +49,11 @@ Design the persistent navigation and layout that wraps all sections.
 - `/design-screen` — Create screen designs
 - `/screenshot-design` — Capture screenshots
 
-### 5. Export (`/export-product`)
+### 5. Architecture (`/create-tdd`)
+Document technical decisions for implementation — tech stack, architecture patterns, and integrations. This phase comes after sections are designed, allowing engineering to add technical context before export.
+**Output:** `product/architecture/tech-decisions.md`
+
+### 6. Export (`/export-product`)
 Generate the complete export package with all components, types, and handoff documentation.
 **Output:** `product-plan/`
 
@@ -71,6 +75,9 @@ product/                           # Product definition (portable)
 │
 ├── shell/                         # Application shell
 │   └── spec.md                    # Shell specification
+│
+├── architecture/                  # Technical decisions
+│   └── tech-decisions.md          # Tech stack, architecture, integrations
 │
 └── sections/
     └── [section-name]/
@@ -106,6 +113,8 @@ product-plan/                      # Export package (generated)
 │   └── incremental/               # Milestone-by-milestone instructions
 │       ├── 01-shell.md
 │       └── [NN]-[section-id].md   # Section-specific instructions
+├── architecture/                  # Technical decisions (if defined)
+│   └── tech-decisions.md
 ├── design-system/                 # Tokens, colors, fonts
 ├── data-shapes/                   # UI data contracts (types components expect)
 ├── shell/                         # Shell components
@@ -144,9 +153,9 @@ These rules apply to both the Design OS application and all screen designs/compo
 
 ---
 
-## The Four Pillars
+## The Planning Phases
 
-Design OS is organized around four main areas:
+Design OS is organized around these main phases:
 
 1. **Product Overview** — The "what" and "why"
    - Product name and description
@@ -168,7 +177,15 @@ Design OS is organized around four main areas:
    - User menu
    - Layout pattern
 
-Plus **Sections** — The individual features, each with spec, data, screen designs.
+5. **Sections** — The individual features
+   - Specifications and user flows
+   - Sample data and TypeScript interfaces
+   - Screen designs (React components)
+
+6. **Architecture** — The technical foundation (optional)
+   - Tech stack choices (framework, database, hosting)
+   - Architecture decisions and patterns
+   - External integrations and key packages
 
 ---
 
@@ -193,11 +210,12 @@ The `/export-product` command generates a UI design handoff package:
   - `product-overview.md`: Always provide for context
   - `one-shot-instructions.md`: All milestones combined
   - Incremental instructions in `instructions/incremental/`
+- **Architecture decisions**: Tech stack and patterns (if `/create-tdd` was run)
 - **Test specs**: Each section includes `tests.md` with UI behavior specs
 - **Portable components**: Props-based, ready for any React setup
 - **Data shapes**: TypeScript interfaces defining what data the components expect
 
-The handoff focuses on UI designs, product requirements, and user flows. Backend architecture, data modeling, and business logic decisions are left to the implementation agent. The prompts guide the agent to ask clarifying questions about tech stack and requirements before building.
+The handoff focuses on UI designs, product requirements, and user flows. If architecture decisions are documented via `/create-tdd`, they're included in the export to guide the implementation agent on tech stack choices. Otherwise, the prompts guide the agent to ask clarifying questions about tech stack and requirements before building.
 
 ---
 

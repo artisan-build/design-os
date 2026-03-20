@@ -6,6 +6,7 @@ import type { ProductOverview, ProductRoadmap, Problem, Section, ProductData } f
 import { loadDataShape, hasDataShape } from './data-shape-loader'
 import { loadDesignSystem, hasDesignSystem } from './design-system-loader'
 import { loadShellInfo, hasShell } from './shell-loader'
+import { loadArchitecture, hasArchitecture } from './architecture-loader'
 
 // Load markdown files from /product/ directory at build time
 const productFiles = import.meta.glob('/product/*.md', {
@@ -170,6 +171,7 @@ export function loadProductData(): ProductData {
     dataShape: loadDataShape(),
     designSystem: loadDesignSystem(),
     shell: loadShellInfo(),
+    architecture: loadArchitecture(),
   }
 }
 
@@ -202,4 +204,4 @@ export function getExportZipUrl(): string | null {
 }
 
 // Re-export utility functions for checking individual pieces
-export { hasDataShape, hasDesignSystem, hasShell }
+export { hasDataShape, hasDesignSystem, hasShell, hasArchitecture }

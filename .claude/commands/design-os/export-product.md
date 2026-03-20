@@ -16,6 +16,7 @@ Verify the minimum requirements exist:
 - `/product/design-system/colors.json` — Color tokens
 - `/product/design-system/typography.json` — Typography tokens
 - `src/shell/components/AppShell.tsx` — Application shell
+- `/product/architecture/tech-decisions.md` — Technical decisions
 
 If required files are missing:
 
@@ -34,6 +35,7 @@ If recommended files are missing, show warnings but continue:
 - [ ] Product entities — Run `/data-shape` for consistent entity naming
 - [ ] Design tokens — Run `/design-tokens` for consistent styling
 - [ ] Application shell — Run `/design-shell` for navigation structure
+- [ ] Technical decisions — Run `/create-tdd` for tech stack and architecture
 
 You can proceed without these, but they help ensure a complete handoff."
 
@@ -47,8 +49,9 @@ Read all relevant files:
 4. `/product/design-system/colors.json` (if exists)
 5. `/product/design-system/typography.json` (if exists)
 6. `/product/shell/spec.md` (if exists)
-7. For each section: `spec.md`, `data.json`, `types.ts`
-8. List screen design components in `src/sections/` and `src/shell/`
+7. `/product/architecture/tech-decisions.md` (if exists)
+8. For each section: `spec.md`, `data.json`, `types.ts`
+9. List screen design components in `src/sections/` and `src/shell/`
 
 ## Step 3: Create Export Directory Structure
 
@@ -70,6 +73,9 @@ product-plan/
 │       ├── 02-[first-section].md
 │       ├── 03-[second-section].md
 │       └── ...
+│
+├── architecture/                # Technical decisions (if defined)
+│   └── tech-decisions.md
 │
 ├── design-system/               # Design tokens
 │   ├── tokens.css
@@ -136,6 +142,21 @@ Create `product-plan/product-overview.md`:
 - Heading: [font or "Not defined"]
 - Body: [font or "Not defined"]
 - Mono: [font or "Not defined"]
+
+## Tech Stack
+
+[If architecture/tech-decisions.md exists:]
+
+**Framework:** [Framework name and version]
+**Database:** [Database name]
+**Frontend:** [Frontend framework]
+**Hosting:** [Hosting platform]
+
+See `product-plan/architecture/tech-decisions.md` for full technical decisions.
+
+[If not:]
+
+Tech stack decisions to be made during implementation.
 
 ## Implementation Sequence
 
@@ -819,6 +840,7 @@ Please carefully read and analyze the following files:
 2. **@product-plan/instructions/one-shot-instructions.md** — Complete implementation instructions for all milestones
 
 After reading these, also review:
+- **@product-plan/architecture/** — Tech stack and architecture decisions (if present)
 - **@product-plan/design-system/** — Color and typography tokens
 - **@product-plan/data-shapes/** — UI data contracts (the shapes of data the components expect)
 - **@product-plan/shell/** — Application shell components
@@ -828,7 +850,7 @@ After reading these, also review:
 
 Review all the provided files, then ask me clarifying questions about:
 
-1. **My tech stack** — What framework, language, and tools I'm using, and any existing codebase conventions
+1. **My tech stack** — What framework, language, and tools I'm using, and any existing codebase conventions (check `architecture/tech-decisions.md` first — some decisions may already be documented)
 2. **Authentication & users** — How users should sign up, log in, and what permissions exist
 3. **Product requirements** — Anything in the specs or user flows that needs clarification
 4. **Anything else** — Whatever you need to know before implementing
@@ -905,6 +927,7 @@ This folder contains everything needed to implement [Product Name].
 - `instructions/incremental/` — Milestone-by-milestone instructions (shell, then sections)
 
 **Design Assets:**
+- `architecture/` — Tech stack and architecture decisions (if defined)
 - `design-system/` — Colors, fonts, design tokens
 - `data-shapes/` — UI data contracts (the shapes of data components expect)
 - `shell/` — Application shell components
@@ -998,6 +1021,7 @@ Let the user know:
 - `instructions/incremental/` — [N] milestone instructions (shell, then sections)
 
 **Design Assets:**
+- `architecture/` — Tech stack and architecture decisions (if defined)
 - `design-system/` — Colors, fonts, tokens
 - `data-shapes/` — UI data contracts and combined type reference
 - `shell/` — Application shell components

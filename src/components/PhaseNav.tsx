@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
-import { FileText, Boxes, Layout, LayoutList, Package } from 'lucide-react'
+import { FileText, Boxes, Layout, LayoutList, Wrench, Package } from 'lucide-react'
 import { loadProductData, hasExportZip } from '@/lib/product-loader'
 import { getAllSectionIds, getSectionScreenDesigns } from '@/lib/section-loader'
 
-export type Phase = 'product' | 'data-shape' | 'design' | 'sections' | 'export'
+export type Phase = 'product' | 'data-shape' | 'design' | 'sections' | 'architecture' | 'export'
 
 interface PhaseConfig {
   id: Phase
@@ -18,6 +18,7 @@ const phases: PhaseConfig[] = [
   { id: 'data-shape', label: 'Data Shape', icon: Boxes, path: '/data-shape' },
   { id: 'design', label: 'Design', icon: Layout, path: '/design' },
   { id: 'sections', label: 'Sections', icon: LayoutList, path: '/sections' },
+  { id: 'architecture', label: 'Architecture', icon: Wrench, path: '/architecture' },
   { id: 'export', label: 'Export', icon: Package, path: '/export' },
 ]
 
@@ -58,6 +59,8 @@ function usePhaseStatuses(): PhaseInfo[] {
     currentPhaseId = 'design'
   } else if (currentPath === '/sections' || currentPath.startsWith('/sections/')) {
     currentPhaseId = 'sections'
+  } else if (currentPath === '/architecture') {
+    currentPhaseId = 'architecture'
   } else if (currentPath === '/export') {
     currentPhaseId = 'export'
   }
@@ -65,12 +68,16 @@ function usePhaseStatuses(): PhaseInfo[] {
   // Check if export zip exists
   const exportZipExists = hasExportZip()
 
+  // Check if architecture is defined
+  const hasArchitecture = !!productData.architecture
+
   // Determine completion status
   const phaseComplete: Record<Phase, boolean> = {
     'product': hasOverview && hasRoadmap,
     'data-shape': hasDataShape,
     'design': hasDesignSystem || hasShell,
     'sections': hasSections,
+    'architecture': hasArchitecture,
     'export': exportZipExists,
   }
 
