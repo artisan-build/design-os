@@ -110,3 +110,13 @@ Review and let me know if you'd like to adjust anything. When you're ready, run 
 - Entity names should be singular (User, Invoice, Project — not Users, Invoices)
 - Do NOT present a draft for approval — generate the file immediately and let the user review after
 - If the user requests changes after reviewing, update the file immediately
+
+## Git: Commit and Push
+
+After creating or updating any files, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Update data shape" && git push
+```
+
+This ensures planning documents are saved to the remote repository in case the session ends unexpectedly.

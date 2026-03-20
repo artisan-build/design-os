@@ -110,3 +110,13 @@ If they want additional screenshots (e.g., dark mode, different states):
 - Capture at a consistent viewport width for documentation consistency
 - Always capture full page screenshots to include all scrollable content
 - After you're done, you may kill the dev server if you started it
+
+## Git: Commit and Push
+
+After saving the screenshot, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Add [section-name] screenshot" && git push
+```
+
+Replace `[section-name]` with the actual section name. This ensures screenshots are saved to the remote repository in case the session ends unexpectedly.

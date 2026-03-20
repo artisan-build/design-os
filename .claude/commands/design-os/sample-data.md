@@ -231,3 +231,13 @@ Review the files and let me know if you'd like any adjustments. When you're read
 - **Use entity names from the global data shape for consistency across sections**
 - Do NOT present a draft for approval — generate the files immediately and let the user review after
 - If the user requests changes after reviewing, update the files immediately
+
+## Git: Commit and Push
+
+After creating or updating sample data files, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Update [section-name] sample data" && git push
+```
+
+Replace `[section-name]` with the actual section name. This ensures planning documents are saved to the remote repository in case the session ends unexpectedly.

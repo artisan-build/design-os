@@ -236,3 +236,13 @@ Next: Run `/shape-section` to start designing your first section."
 - Apply design tokens when available for consistent styling
 - Keep the shell focused on navigation chrome — no authentication UI
 - Section screen designs will render inside the shell's content area
+
+## Git: Commit and Push
+
+After creating the shell specification and components, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Add application shell design" && git push
+```
+
+This ensures planning documents are saved to the remote repository in case the session ends unexpectedly.

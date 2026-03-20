@@ -1050,3 +1050,13 @@ The components are props-based and portable — they accept data and callbacks, 
 - Sample data files are for testing before real APIs are built
 - The export is self-contained — no dependencies on Design OS
 - Components are portable — they work with any React setup
+
+## Git: Commit and Push
+
+After generating the export package, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Generate export package" && git push
+```
+
+This ensures the export package is saved to the remote repository in case the session ends unexpectedly.

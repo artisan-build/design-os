@@ -165,3 +165,13 @@ Review these files and let me know if you'd like to adjust anything. When you're
 - **Always ensure the product has a name** - if user didn't provide one, ask for it
 - Do NOT present a draft for approval — go straight to writing all three files after gathering enough info
 - If the user requests changes after reviewing, update the relevant files immediately
+
+## Git: Commit and Push
+
+After creating or updating any files, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Update product vision" && git push
+```
+
+This ensures planning documents are saved to the remote repository in case the session ends unexpectedly.

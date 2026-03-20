@@ -307,3 +307,13 @@ If the spec indicates additional views are needed:
 - Sub-components should also be props-based for maximum portability
 - Apply design tokens when available for consistent branding
 - Screen designs render inside the shell when viewed in Design OS (if shell exists)
+
+## Git: Commit and Push
+
+After creating the screen design components, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Add [section-name] screen design" && git push
+```
+
+Replace `[section-name]` with the actual section name. This ensures design work is saved to the remote repository in case the session ends unexpectedly.

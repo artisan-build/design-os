@@ -166,3 +166,13 @@ Feel free to review these files. Let me know if you'd like to adjust anything in
 - The format must match exactly for the app to parse it correctly
 - Do NOT present a draft for approval — go straight to writing the files after gathering enough info
 - If the user requests changes after reviewing, update the relevant files immediately
+
+## Git: Commit and Push
+
+After creating the section files (spec, data, types), immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Add [section-name] section spec and data" && git push
+```
+
+Replace `[section-name]` with the actual section name. This ensures planning documents are saved to the remote repository in case the session ends unexpectedly.

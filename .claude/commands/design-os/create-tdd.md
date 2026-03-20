@@ -144,3 +144,13 @@ To make changes, run `/create-tdd` again or edit the file directly."
 - Keep the document concise and focused on decisions that matter for implementation
 - The format must match exactly for the app to parse it correctly
 - If a `tech-decisions.md` file already exists, ask if the user wants to update it or start fresh
+
+## Git: Commit and Push
+
+After creating or updating the TDD file, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Add technical decisions" && git push
+```
+
+This ensures planning documents are saved to the remote repository in case the session ends unexpectedly.

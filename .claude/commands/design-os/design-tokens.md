@@ -164,3 +164,13 @@ Available colors (each has shades 50-950):
 - Keep suggestions contextual to the product type
 - The mono font is optional but recommended for any product with code/technical content
 - Design tokens apply to screen designs only — the Design OS app keeps its own aesthetic
+
+## Git: Commit and Push
+
+After creating the design token files, immediately commit and push the changes to preserve work:
+
+```bash
+git add -A && git commit -m "Add design tokens" && git push
+```
+
+This ensures planning documents are saved to the remote repository in case the session ends unexpectedly.
