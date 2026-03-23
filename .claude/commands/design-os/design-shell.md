@@ -201,7 +201,18 @@ If design tokens exist, apply them to the shell components:
 - Apply body font to other text
 - Include Google Fonts import in the preview
 
-## Step 9: Confirm Completion
+## Step 9: Restart Vite Dev Server
+
+After creating the shell components, restart the Vite dev server so the new files are picked up:
+
+```bash
+# Kill any running Vite process and restart
+pkill -f "vite" 2>/dev/null; sleep 1; npm run dev &
+```
+
+Wait a few seconds for the server to start before confirming completion.
+
+## Step 10: Confirm Completion
 
 Let the user know:
 
@@ -222,7 +233,7 @@ Let the user know:
 - Mobile responsive design
 - Light/dark mode support
 
-**Important:** Restart your dev server to see the changes.
+The dev server has been restarted. You can view the shell design in Design OS.
 
 When you design section screens with `/design-screen`, they will render inside this shell, showing the full app experience.
 

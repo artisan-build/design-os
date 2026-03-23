@@ -264,7 +264,18 @@ export { InvoiceRow } from './InvoiceRow'
 // Add other sub-components as needed
 ```
 
-## Step 10: Confirm and Next Steps
+## Step 10: Restart Vite Dev Server
+
+After creating the screen design components, restart the Vite dev server so the new files are picked up:
+
+```bash
+# Kill any running Vite process and restart
+pkill -f "vite" 2>/dev/null; sleep 1; npm run dev &
+```
+
+Wait a few seconds for the server to start before confirming completion.
+
+## Step 11: Confirm and Next Steps
 
 Let the user know:
 
@@ -280,7 +291,7 @@ Let the user know:
 
 - `src/sections/[section-id]/[ViewName].tsx`
 
-**Important:** Restart your dev server to see the changes.
+The dev server has been restarted. You can view the screen design in Design OS.
 
 [If shell exists]: The screen design will render inside your application shell, showing the full app experience.
 
@@ -303,7 +314,6 @@ If the spec indicates additional views are needed:
 - The preview wrapper is the ONLY file that imports data.json
 - Use TypeScript interfaces from types.ts for all props
 - Callbacks should be optional (use `?`) and called with optional chaining (`?.`)
-- Always remind the user to restart the dev server after creating files
 - Sub-components should also be props-based for maximum portability
 - Apply design tokens when available for consistent branding
 - Screen designs render inside the shell when viewed in Design OS (if shell exists)

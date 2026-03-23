@@ -1003,7 +1003,18 @@ cd . && zip -r product-plan.zip product-plan/
 
 This creates `product-plan.zip` in the project root, which will be available for download on the Export page.
 
-## Step 16: Confirm Completion
+## Step 16: Restart Vite Dev Server
+
+After generating the export package, restart the Vite dev server so the zip file is available for download:
+
+```bash
+# Kill any running Vite process and restart
+pkill -f "vite" 2>/dev/null; sleep 1; npm run dev &
+```
+
+Wait a few seconds for the server to start before confirming completion.
+
+## Step 17: Confirm Completion
 
 Let the user know:
 
@@ -1029,7 +1040,7 @@ Let the user know:
 
 **Download:**
 
-Restart your dev server and visit the Export page to download `product-plan.zip`.
+The dev server has been restarted. Visit the Export page to download `product-plan.zip`.
 
 **How to Use:**
 
