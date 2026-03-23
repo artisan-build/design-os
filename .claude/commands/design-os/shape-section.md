@@ -116,6 +116,26 @@ Immediately after writing the spec, run the full sample data generation process 
    - Edge cases: at least one empty array, one long description
    - TypeScript-friendly structure with consistent field names
 
+   **CRITICAL — Complete Data for ALL Records:**
+   Every single record must have complete, realistic data for ALL fields. Do not skimp on later records. When a user clicks to view a detail modal or expands any row, they should see rich, complete information — not placeholder text or blank fields.
+
+   This is for client demos. The client cannot fill in blanks mentally the way a developer can. If there are 8 invoices in the list, all 8 must have:
+   - Complete client information
+   - Realistic line items with descriptions
+   - Proper dates, amounts, and statuses
+   - Any notes or additional fields fully populated
+
+   **Bad example (don't do this):**
+   - Record 1: Full client name, email, address, 3 line items with descriptions
+   - Record 2: Full client name, email, address, 2 line items
+   - Record 3: "Client C", "", "", 1 line item with "Service"
+   - Record 4-8: Minimal data, empty descriptions
+
+   **Good example (do this):**
+   - ALL records have complete client name, email, address
+   - ALL records have realistic line items with proper descriptions
+   - ALL records are demo-ready when viewed in detail
+
    Required `_meta` structure:
    ```json
    {

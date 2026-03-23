@@ -232,6 +232,24 @@ Review the files and let me know if you'd like any adjustments. When you're read
 - Do NOT present a draft for approval — generate the files immediately and let the user review after
 - If the user requests changes after reviewing, update the files immediately
 
+### CRITICAL — Complete Data for ALL Records
+
+**Every single record must have complete, realistic data for ALL fields.** Do not create "first-class" records with full data and "second-class" records with minimal placeholder data.
+
+This sample data is used for client demos. When a client clicks any row to view details, opens any modal, or expands any item, they need to see rich, complete information. Clients cannot fill in blanks mentally the way developers can.
+
+**What to avoid:**
+- First 2-3 records with full detail, remaining records with sparse data
+- Complete data only for visible list columns, empty data for detail fields
+- Realistic names/dates on some records, "Test" or "Example" on others
+- Line items, notes, or nested data only on the first record
+
+**What to do:**
+- ALL records have complete data for every field
+- ALL nested arrays (line items, comments, attachments) have realistic entries
+- ALL detail views show rich, believable content regardless of which record is selected
+- Variety in the data (different statuses, amounts, dates) but consistency in completeness
+
 ## Git: Commit and Push
 
 After creating or updating sample data files, immediately commit and push the changes to preserve work:
