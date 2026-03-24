@@ -119,6 +119,64 @@ The `_meta` descriptions should:
 
 The data should directly support the user flows and UI requirements in the spec.
 
+#### Scenarios — Multiple Data States
+
+For screens that need to show different states (e.g., empty form vs completed form, new user vs returning user), use the `_scenarios` structure instead of putting data at the root level:
+
+```json
+{
+  "_meta": {
+    "models": {
+      "rsvp": "The user's RSVP response for an event."
+    },
+    "relationships": []
+  },
+  "_scenarios": {
+    "Empty Form": {
+      "rsvp": {
+        "name": "",
+        "email": "",
+        "attending": null,
+        "guestCount": 0,
+        "dietaryRestrictions": ""
+      }
+    },
+    "Completed RSVP": {
+      "rsvp": {
+        "name": "Sarah Chen",
+        "email": "sarah@example.com",
+        "attending": true,
+        "guestCount": 2,
+        "dietaryRestrictions": "Vegetarian"
+      }
+    },
+    "Declined": {
+      "rsvp": {
+        "name": "Mike Johnson",
+        "email": "mike@example.com",
+        "attending": false,
+        "guestCount": 0,
+        "dietaryRestrictions": ""
+      }
+    }
+  }
+}
+```
+
+**When to use scenarios:**
+- Form screens with empty, partial, and completed states
+- Dashboard views with different data volumes (empty, few items, many items)
+- User profiles in different states (new user, active user, suspended)
+- Any screen where the user might want to show variations to clients
+
+**Scenario rules:**
+- The first scenario is the default (shown when no scenario is selected)
+- Scenario names should be descriptive and client-friendly
+- Each scenario contains complete data for that state
+- The `_meta` section is shared across all scenarios (defined once at root level)
+
+When scenarios exist, Design OS shows a scenario switcher bar in the screen design preview, allowing quick switching between states.
+
 ### Generate `product/sections/[section-id]/types.ts`
 
 Generate TypeScript types based on the data structure.

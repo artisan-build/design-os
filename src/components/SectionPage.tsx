@@ -101,7 +101,7 @@ export function SectionPage() {
 
         {/* Step 2: Sample Data */}
         <StepIndicator step={2} status={stepStatuses[1]}>
-          <DataCard data={sectionData?.data || null} />
+          <DataCard data={sectionData?.data || null} dataParsed={sectionData?.dataParsed} />
         </StepIndicator>
 
         {/* Step 3: Screen Designs */}

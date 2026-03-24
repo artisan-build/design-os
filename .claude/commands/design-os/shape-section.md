@@ -150,6 +150,21 @@ Immediately after writing the spec, run the full sample data generation process 
    }
    ```
 
+   **Scenarios — For screens with multiple states:**
+   If the spec implies the screen needs to be shown in different states (empty form vs completed, new user vs returning user, etc.), use `_scenarios` instead of putting data at the root:
+
+   ```json
+   {
+     "_meta": { ... },
+     "_scenarios": {
+       "Empty Form": { "formData": { "name": "", "email": "" } },
+       "Completed Form": { "formData": { "name": "Sarah Chen", "email": "sarah@example.com" } }
+     }
+   }
+   ```
+
+   The first scenario is the default. Design OS will show a scenario switcher to toggle between states.
+
 4. **Create `product/sections/[section-id]/types.ts`** with:
    - Data interfaces inferred from sample data (strings, numbers, booleans, arrays, nested objects)
    - Union types for status/enum fields based on the spec

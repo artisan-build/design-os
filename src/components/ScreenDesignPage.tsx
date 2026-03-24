@@ -1,11 +1,12 @@
 import { Suspense, useMemo, useState, useRef, useCallback, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor } from 'lucide-react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { ArrowLeft, Maximize2, GripVertical, Layout, Smartphone, Tablet, Monitor, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ThemeToggle'
-import { loadScreenDesignComponent, sectionUsesShell } from '@/lib/section-loader'
+import { loadScreenDesignComponent, sectionUsesShell, loadSectionData } from '@/lib/section-loader'
 import { loadAppShell, hasShellComponents, loadShellInfo } from '@/lib/shell-loader'
 import { loadProductData } from '@/lib/product-loader'
+import { SectionDataProvider } from '@/lib/section-data-context'
 import React from 'react'
 
 const MIN_WIDTH = 320
@@ -14,6 +15,7 @@ const DEFAULT_WIDTH_PERCENT = 100
 export function ScreenDesignPage() {
   const { sectionId, screenDesignName } = useParams<{ sectionId: string; screenDesignName: string }>()
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
   const [widthPercent, setWidthPercent] = useState(DEFAULT_WIDTH_PERCENT)
   const containerRef = useRef<HTMLDivElement>(null)
   const isDragging = useRef(false)
@@ -21,6 +23,19 @@ export function ScreenDesignPage() {
   // Load product data to get section title
   const productData = useMemo(() => loadProductData(), [])
   const section = productData.roadmap?.sections.find((s) => s.id === sectionId)
+
+  // Load section data to get scenarios
+  const sectionData = useMemo(() => sectionId ? loadSectionData(sectionId) : null, [sectionId])
+  const scenarios = sectionData?.dataParsed?.scenarios || []
+  const hasMultipleScenarios = scenarios.length > 1
+
+  // Get current scenario from URL param (default to first)
+  const currentScenario = searchParams.get('scenario') || scenarios[0]?.name || 'Default'
+
+  // Handle scenario change
+  const handleScenarioChange = useCallback((scenarioName: string) => {
+    setSearchParams({ scenario: scenarioName })
+  }, [setSearchParams])
 
   // Handle resize drag
   const handleMouseDown = useCallback(() => {
@@ -134,7 +149,7 @@ export function ScreenDesignPage() {
             </span>
             <ThemeToggle />
             <a
-              href={`/sections/${sectionId}/screen-designs/${screenDesignName}/fullscreen`}
+              href={`/sections/${sectionId}/screen-designs/${screenDesignName}/fullscreen${currentScenario ? `?scenario=${encodeURIComponent(currentScenario)}` : ''}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400 hover:text-stone-700 dark:hover:text-stone-200 transition-colors"
@@ -144,6 +159,51 @@ export function ScreenDesignPage() {
             </a>
           </div>
         </div>
+
+        {/* Scenario bar - only shown when multiple scenarios exist */}
+        {hasMultipleScenarios && (
+          <div className="px-4 py-2 border-t border-stone-100 dark:border-stone-800/50 bg-stone-50 dark:bg-stone-900/50">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-medium text-stone-500 dark:text-stone-400 uppercase tracking-wide">
+                Scenario
+              </span>
+              {/* Pills for 4 or fewer scenarios */}
+              {scenarios.length <= 4 ? (
+                <div className="flex items-center gap-1">
+                  {scenarios.map((scenario) => (
+                    <button
+                      key={scenario.name}
+                      onClick={() => handleScenarioChange(scenario.name)}
+                      className={`px-3 py-1 text-sm rounded-full transition-colors ${
+                        currentScenario === scenario.name
+                          ? 'bg-lime-500 dark:bg-lime-600 text-white font-medium'
+                          : 'bg-stone-200 dark:bg-stone-700 text-stone-600 dark:text-stone-300 hover:bg-stone-300 dark:hover:bg-stone-600'
+                      }`}
+                    >
+                      {scenario.name}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                /* Dropdown for 5+ scenarios */
+                <div className="relative">
+                  <select
+                    value={currentScenario}
+                    onChange={(e) => handleScenarioChange(e.target.value)}
+                    className="appearance-none bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 rounded-md px-3 py-1.5 pr-8 text-sm text-stone-700 dark:text-stone-300 cursor-pointer hover:border-stone-300 dark:hover:border-stone-600 focus:outline-none focus:ring-2 focus:ring-lime-500/50"
+                  >
+                    {scenarios.map((scenario) => (
+                      <option key={scenario.name} value={scenario.name}>
+                        {scenario.name}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" strokeWidth={1.5} />
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Preview area with resizable container */}
@@ -167,7 +227,7 @@ export function ScreenDesignPage() {
           style={{ width: previewWidth, minWidth: MIN_WIDTH, maxWidth: '100%' }}
         >
           <iframe
-            src={`/sections/${sectionId}/screen-designs/${screenDesignName}/fullscreen`}
+            src={`/sections/${sectionId}/screen-designs/${screenDesignName}/fullscreen${currentScenario ? `?scenario=${encodeURIComponent(currentScenario)}` : ''}`}
             className="w-full h-full border-0"
             title="Screen Design Preview"
           />
@@ -330,7 +390,7 @@ export function ScreenDesignFullscreen() {
     }
   }, [])
 
-  if (!ScreenDesignComponent) {
+  if (!ScreenDesignComponent || !sectionId) {
     return (
       <div className="h-screen flex items-center justify-center bg-background">
         <p className="text-stone-600 dark:text-stone-400">Screen design not found.</p>
@@ -338,9 +398,29 @@ export function ScreenDesignFullscreen() {
     )
   }
 
+  // Wrap everything in SectionDataProvider for scenario support
   // If shell exists, wrap screen design in AppShell
   if (AppShellComponent) {
     return (
+      <SectionDataProvider sectionId={sectionId}>
+        <Suspense
+          fallback={
+            <div className="h-screen flex items-center justify-center bg-background">
+              <div className="text-stone-500 dark:text-stone-400">Loading...</div>
+            </div>
+          }
+        >
+          <AppShellComponent>
+            <ScreenDesignComponent />
+          </AppShellComponent>
+        </Suspense>
+      </SectionDataProvider>
+    )
+  }
+
+  // No shell, render screen design directly
+  return (
+    <SectionDataProvider sectionId={sectionId}>
       <Suspense
         fallback={
           <div className="h-screen flex items-center justify-center bg-background">
@@ -348,23 +428,8 @@ export function ScreenDesignFullscreen() {
           </div>
         }
       >
-        <AppShellComponent>
-          <ScreenDesignComponent />
-        </AppShellComponent>
+        <ScreenDesignComponent />
       </Suspense>
-    )
-  }
-
-  // No shell, render screen design directly
-  return (
-    <Suspense
-      fallback={
-        <div className="h-screen flex items-center justify-center bg-background">
-          <div className="text-stone-500 dark:text-stone-400">Loading...</div>
-        </div>
-      }
-    >
-      <ScreenDesignComponent />
-    </Suspense>
+    </SectionDataProvider>
   )
 }

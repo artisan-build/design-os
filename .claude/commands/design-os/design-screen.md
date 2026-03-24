@@ -222,18 +222,21 @@ export function InvoiceList({ invoices, onView, onEdit, onDelete }: InvoiceListP
 
 Create a preview wrapper at `src/sections/[section-id]/[ViewName].tsx` (note: this is in the section root, not in components/).
 
-This wrapper is what Design OS renders. It imports the sample data and feeds it to the props-based component.
+This wrapper is what Design OS renders. It uses the `useSectionData()` hook to get the current scenario's data and feeds it to the props-based component.
 
 Example:
 
 ```tsx
-import data from '@/../product/sections/[section-id]/data.json'
+import { useSectionData } from '@/lib/section-data-context'
 import { InvoiceList } from './components/InvoiceList'
+import type { Invoice } from '@/../product/sections/[section-id]/types'
 
 export default function InvoiceListPreview() {
+  const { invoices } = useSectionData<{ invoices: Invoice[] }>()
+
   return (
     <InvoiceList
-      invoices={data.invoices}
+      invoices={invoices}
       onView={(id) => console.log('View invoice:', id)}
       onEdit={(id) => console.log('Edit invoice:', id)}
       onDelete={(id) => console.log('Delete invoice:', id)}
@@ -246,11 +249,29 @@ export default function InvoiceListPreview() {
 The preview wrapper:
 
 - Has a `default` export (required for Design OS routing)
-- Imports sample data from data.json
+- Uses `useSectionData()` hook to get scenario-aware data
 - Passes data to the component via props
 - Provides console.log handlers for callbacks (for testing interactions)
 - Is NOT exported to the user's codebase - it's only for Design OS
 - **Will render inside the shell** if one has been designed
+- **Automatically supports scenario switching** — when the user selects a different scenario in the Design OS UI, the data updates automatically
+
+### Why useSectionData() instead of direct imports?
+
+The `useSectionData()` hook enables **scenario support**. When data.json contains a `_scenarios` object with multiple data states, users can switch between them using the scenario bar in Design OS. The hook automatically provides the correct data for the selected scenario.
+
+If your data.json uses scenarios:
+```json
+{
+  "_meta": { ... },
+  "_scenarios": {
+    "Empty List": { "invoices": [] },
+    "With Data": { "invoices": [...] }
+  }
+}
+```
+
+The preview wrapper doesn't need to change — `useSectionData()` handles the scenario selection automatically.
 
 ## Step 9: Create Component Index
 

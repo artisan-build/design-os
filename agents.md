@@ -82,7 +82,7 @@ product/                           # Product definition (portable)
 └── sections/
     └── [section-name]/
         ├── spec.md                # Section specification
-        ├── data.json              # Sample data for screen designs
+        ├── data.json              # Sample data (supports _scenarios for multiple states)
         ├── types.ts               # TypeScript interfaces
         └── *.png                  # Screenshots
 
@@ -135,6 +135,8 @@ When creating screen designs, follow these guidelines:
 
 - **Props-Based Components**: All screen design components must accept data and callbacks via props. Never import data directly in exportable components.
 
+- **Scenario-Aware Preview Wrappers**: Preview wrappers should use `useSectionData()` from `@/lib/section-data-context` to get sample data. This enables scenario switching when data.json defines multiple states via `_scenarios`.
+
 - **No Navigation in Section Screen Designs**: Section screen designs should not include navigation chrome. The shell handles all navigation.
 
 ---
@@ -181,6 +183,7 @@ Design OS is organized around these main phases:
    - Specifications and user flows
    - Sample data and TypeScript interfaces
    - Screen designs (React components)
+   - **Scenarios** — Multiple data states for showing the same screen in different conditions (e.g., empty form vs completed form)
 
 6. **Architecture** — The technical foundation (optional)
    - Tech stack choices (framework, database, hosting)

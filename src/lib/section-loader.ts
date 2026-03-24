@@ -7,7 +7,7 @@
  * - src/sections/[section-id]/[PageName].tsx  - Screen design pages
  */
 
-import type { SectionData, ParsedSpec, ScreenDesignInfo, ScreenshotInfo } from '@/types/section'
+import type { SectionData, ParsedSpec, ParsedSectionData, ScenarioInfo, ScreenDesignInfo, ScreenshotInfo } from '@/types/section'
 import type { ComponentType } from 'react'
 
 // Load spec.md files from product/sections at build time
@@ -143,6 +143,73 @@ export function parseSpec(md: string): ParsedSpec | null {
 }
 
 /**
+ * Parse data.json content into ParsedSectionData with scenario support
+ *
+ * Expected format:
+ * {
+ *   "_meta": { "models": {...}, "relationships": [...] },
+ *   "_scenarios": {
+ *     "Scenario Name": { ...data for this scenario... },
+ *     "Another Scenario": { ...data for this scenario... }
+ *   }
+ * }
+ *
+ * The first scenario in _scenarios is the default.
+ */
+export function parseSectionData(data: Record<string, unknown> | null): ParsedSectionData | null {
+  if (!data) return null
+
+  try {
+    // Extract _meta
+    const rawMeta = data._meta as { models?: Record<string, string>; relationships?: string[] } | undefined
+    const meta = rawMeta && typeof rawMeta === 'object' && rawMeta.models && rawMeta.relationships
+      ? { models: rawMeta.models, relationships: rawMeta.relationships }
+      : null
+
+    // Extract _scenarios
+    const rawScenarios = data._scenarios as Record<string, Record<string, unknown>> | undefined
+    const scenarios: ScenarioInfo[] = []
+
+    if (rawScenarios && typeof rawScenarios === 'object') {
+      // Parse scenarios from _scenarios object
+      for (const [name, scenarioData] of Object.entries(rawScenarios)) {
+        if (typeof scenarioData === 'object' && scenarioData !== null) {
+          scenarios.push({ name, data: scenarioData })
+        }
+      }
+    }
+
+    // If no _scenarios defined, the whole data object (minus _meta) is a single "Default" scenario
+    if (scenarios.length === 0) {
+      const { _meta, ...rest } = data
+      scenarios.push({ name: 'Default', data: rest })
+    }
+
+    return { meta, scenarios, raw: data }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Get scenario data by name (or first scenario if name not found)
+ */
+export function getScenarioData(parsed: ParsedSectionData | null, scenarioName?: string): Record<string, unknown> {
+  if (!parsed || parsed.scenarios.length === 0) {
+    return {}
+  }
+
+  // If no name specified, return first scenario (default)
+  if (!scenarioName) {
+    return parsed.scenarios[0].data
+  }
+
+  // Find by name
+  const found = parsed.scenarios.find(s => s.name === scenarioName)
+  return found ? found.data : parsed.scenarios[0].data
+}
+
+/**
  * Get screen designs for a specific section
  */
 export function getSectionScreenDesigns(sectionId: string): ScreenDesignInfo[] {
@@ -215,6 +282,7 @@ export function loadSectionData(sectionId: string): SectionData {
     spec: specContent,
     specParsed: specContent ? parseSpec(specContent) : null,
     data,
+    dataParsed: parseSectionData(data),
     screenDesigns: getSectionScreenDesigns(sectionId),
     screenshots: getSectionScreenshots(sectionId),
   }
