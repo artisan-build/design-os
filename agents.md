@@ -57,8 +57,12 @@ Design the persistent navigation and layout that wraps all sections.
 Document technical decisions for implementation — tech stack, architecture patterns, and integrations. This phase comes after sections are designed, allowing engineering to add technical context before export.
 **Output:** `product/architecture/tech-decisions.md`
 
-### 6. Issues (`/generate-issues`)
+### 6. Issues (`/generate-issues`, `/create-github-issues`)
 Transform planning documents into well-shaped GitHub issues that AI agents (or humans) can implement without clarification. Includes gap analysis to identify missing implementation details, then generates grouped issues with dependencies.
+
+- `/generate-issues` — Analyze planning docs, fill gaps, generate issues JSON
+- `/create-github-issues` — Create the issues on GitHub using the `gh` CLI
+
 **Output:** `product/issues/issues.json`
 
 ### 7. Export (`/export-product`)
