@@ -57,7 +57,11 @@ Design the persistent navigation and layout that wraps all sections.
 Document technical decisions for implementation — tech stack, architecture patterns, and integrations. This phase comes after sections are designed, allowing engineering to add technical context before export.
 **Output:** `product/architecture/tech-decisions.md`
 
-### 6. Export (`/export-product`)
+### 6. Issues (`/generate-issues`)
+Transform planning documents into well-shaped GitHub issues that AI agents (or humans) can implement without clarification. Includes gap analysis to identify missing implementation details, then generates grouped issues with dependencies.
+**Output:** `product/issues/issues.json`
+
+### 7. Export (`/export-product`)
 Generate the complete export package with all components, types, and handoff documentation.
 **Output:** `product-plan/`
 
@@ -83,6 +87,9 @@ product/                           # Product definition (portable)
 │
 ├── architecture/                  # Technical decisions
 │   └── tech-decisions.md          # Tech stack, architecture, integrations
+│
+├── issues/                        # Generated GitHub issues
+│   └── issues.json                # Issue groups with dependencies, labels, screenshots
 │
 └── sections/
     └── [section-name]/
@@ -194,6 +201,13 @@ Design OS is organized around these main phases:
    - Tech stack choices (framework, database, hosting)
    - Architecture decisions and patterns
    - External integrations and key packages
+
+7. **Issues** — Implementation work items
+   - Gap analysis identifies missing implementation details
+   - Grouped by dependency order (Foundation → Features → UI → Polish)
+   - Each issue includes tasks, acceptance criteria, and dependencies
+   - UI issues reference screenshots from the planning repo
+   - Human tasks flagged for manual action (Stripe, DNS, API keys, etc.)
 
 ---
 

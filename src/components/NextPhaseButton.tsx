@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import { FileText, Boxes, Layout, LayoutList, Wrench, Package, ArrowRight } from 'lucide-react'
+import { FileText, Boxes, Layout, LayoutList, Wrench, ListChecks, Package, ArrowRight } from 'lucide-react'
 import type { Phase } from './PhaseNav'
 
 interface NextPhaseButtonProps {
@@ -11,6 +11,7 @@ const phaseConfig: Record<Exclude<Phase, 'product'>, { label: string; icon: type
   'design': { label: 'Design', icon: Layout, path: '/design' },
   'sections': { label: 'Sections', icon: LayoutList, path: '/sections' },
   'architecture': { label: 'Architecture', icon: Wrench, path: '/architecture' },
+  'issues': { label: 'Issues', icon: ListChecks, path: '/issues' },
   'export': { label: 'Export', icon: Package, path: '/export' },
 }
 

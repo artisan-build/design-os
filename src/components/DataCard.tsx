@@ -23,17 +23,6 @@ function extractMeta(data: Record<string, unknown>): DataMeta | null {
   return null
 }
 
-function countRecords(data: Record<string, unknown>): number {
-  // Count arrays at the top level as record collections (excluding _meta and _scenarios)
-  let count = 0
-  for (const [key, value] of Object.entries(data)) {
-    if (key !== '_meta' && key !== '_scenarios' && Array.isArray(value)) {
-      count += value.length
-    }
-  }
-  return count
-}
-
 function countScenarioRecords(scenario: ScenarioInfo): number {
   let count = 0
   for (const [, value] of Object.entries(scenario.data)) {

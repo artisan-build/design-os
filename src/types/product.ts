@@ -114,6 +114,44 @@ export interface TechDecisions {
 }
 
 // =============================================================================
+// GitHub Issues
+// =============================================================================
+
+export type IssueLabel = 'foundation' | 'feature' | 'ui' | 'infrastructure' | 'human-task' | 'polish'
+
+export interface Issue {
+  id: string
+  title: string
+  labels: IssueLabel[]
+  description: string
+  tasks: string[]
+  acceptanceCriteria: string[]
+  dependsOn: string[]
+  screenshots: string[]
+  /** GitHub issue number once created, null if not yet created */
+  githubIssueNumber: number | null
+}
+
+export interface IssueGroup {
+  name: string
+  order: number
+  description: string
+  issues: Issue[]
+}
+
+export interface IssuesMeta {
+  targetRepo: string
+  planningRepo: string
+  generatedAt: string
+  totalIssues: number
+}
+
+export interface IssuesData {
+  _meta: IssuesMeta
+  groups: IssueGroup[]
+}
+
+// =============================================================================
 // Combined Product Data
 // =============================================================================
 
@@ -124,4 +162,5 @@ export interface ProductData {
   designSystem: DesignSystem | null
   shell: ShellInfo | null
   architecture: TechDecisions | null
+  issues: IssuesData | null
 }

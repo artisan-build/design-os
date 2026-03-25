@@ -180,7 +180,7 @@ export function ArchitecturePage() {
         {/* Next Phase Button - shown when architecture is complete */}
         {hasArchitecture && (
           <StepIndicator step={2} status="current" isLast>
-            <NextPhaseButton nextPhase="export" />
+            <NextPhaseButton nextPhase="issues" />
           </StepIndicator>
         )}
       </div>

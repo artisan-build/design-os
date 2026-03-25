@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useMemo } from 'react'
-import { FileText, Boxes, Layout, LayoutList, Wrench, Package } from 'lucide-react'
+import { FileText, Boxes, Layout, LayoutList, Wrench, ListChecks, Package } from 'lucide-react'
 import { loadProductData, hasExportZip } from '@/lib/product-loader'
 import { getAllSectionIds, getSectionScreenDesigns } from '@/lib/section-loader'
 
-export type Phase = 'product' | 'data-shape' | 'design' | 'sections' | 'architecture' | 'export'
+export type Phase = 'product' | 'data-shape' | 'design' | 'sections' | 'architecture' | 'issues' | 'export'
 
 interface PhaseConfig {
   id: Phase
@@ -19,6 +19,7 @@ const phases: PhaseConfig[] = [
   { id: 'design', label: 'Design', icon: Layout, path: '/design' },
   { id: 'sections', label: 'Sections', icon: LayoutList, path: '/sections' },
   { id: 'architecture', label: 'Architecture', icon: Wrench, path: '/architecture' },
+  { id: 'issues', label: 'Issues', icon: ListChecks, path: '/issues' },
   { id: 'export', label: 'Export', icon: Package, path: '/export' },
 ]
 
@@ -61,6 +62,8 @@ function usePhaseStatuses(): PhaseInfo[] {
     currentPhaseId = 'sections'
   } else if (currentPath === '/architecture') {
     currentPhaseId = 'architecture'
+  } else if (currentPath === '/issues') {
+    currentPhaseId = 'issues'
   } else if (currentPath === '/export') {
     currentPhaseId = 'export'
   }
@@ -71,6 +74,9 @@ function usePhaseStatuses(): PhaseInfo[] {
   // Check if architecture is defined
   const hasArchitecture = !!productData.architecture
 
+  // Check if issues are generated
+  const hasIssues = !!productData.issues && productData.issues.groups.length > 0
+
   // Determine completion status
   const phaseComplete: Record<Phase, boolean> = {
     'product': hasOverview && hasRoadmap,
@@ -78,6 +84,7 @@ function usePhaseStatuses(): PhaseInfo[] {
     'design': hasDesignSystem || hasShell,
     'sections': hasSections,
     'architecture': hasArchitecture,
+    'issues': hasIssues,
     'export': exportZipExists,
   }
 

@@ -7,6 +7,7 @@ import { SectionPage } from '@/components/SectionPage'
 import { ScreenDesignPage, ScreenDesignFullscreen } from '@/components/ScreenDesignPage'
 import { ShellDesignPage, ShellDesignFullscreen } from '@/components/ShellDesignPage'
 import { ArchitecturePage } from '@/components/ArchitecturePage'
+import { IssuesPage } from '@/components/IssuesPage'
 import { ExportPage } from '@/components/ExportPage'
 
 export const router = createBrowserRouter([
@@ -49,6 +50,10 @@ export const router = createBrowserRouter([
   {
     path: '/architecture',
     element: <ArchitecturePage />,
+  },
+  {
+    path: '/issues',
+    element: <IssuesPage />,
   },
   {
     path: '/export',
