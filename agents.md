@@ -39,6 +39,10 @@ Use `/product-roadmap`, `/data-shape` individually to update those files after i
 Choose your color palette (from Tailwind) and typography (from Google Fonts). These tokens are applied to all screen designs.
 **Output:** `product/design-system/colors.json`, `product/design-system/typography.json`
 
+### 2b. FluxUI Theme (`/generate-flux-theme`) *(optional)*
+Generate a FluxUI-compatible theme CSS file from your color tokens. Maps primary → accent, secondary → custom utilities, neutral → zinc base.
+**Output:** `product/design-system/flux-theme.css`
+
 ### 3. Application Shell (`/design-shell`)
 Design the persistent navigation and layout that wraps all sections.
 **Output:** `product/shell/spec.md`, `src/shell/components/`
@@ -71,7 +75,8 @@ product/                           # Product definition (portable)
 │
 ├── design-system/                 # Design tokens
 │   ├── colors.json                # { primary, secondary, neutral }
-│   └── typography.json            # { heading, body, mono }
+│   ├── typography.json            # { heading, body, mono }
+│   └── flux-theme.css             # FluxUI theme (generated)
 │
 ├── shell/                         # Application shell
 │   └── spec.md                    # Shell specification
