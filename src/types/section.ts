@@ -43,6 +43,8 @@ export interface SectionData {
   dataParsed: ParsedSectionData | null
   screenDesigns: ScreenDesignInfo[]
   screenshots: ScreenshotInfo[]
+  /** Acceptance tests in Gherkin format */
+  acceptanceTests: AcceptanceFeature | null
 }
 
 export interface ParsedSpec {
@@ -64,4 +66,32 @@ export interface ScreenshotInfo {
   name: string
   path: string
   url: string
+}
+
+// =============================================================================
+// Acceptance Tests (Gherkin Features)
+// =============================================================================
+
+/** A single step in a Gherkin scenario (Given/When/Then/And/But) */
+export interface GherkinStep {
+  keyword: 'Given' | 'When' | 'Then' | 'And' | 'But'
+  text: string
+}
+
+/** A Gherkin scenario with name and steps */
+export interface GherkinScenario {
+  name: string
+  steps: GherkinStep[]
+}
+
+/** Parsed .feature file content */
+export interface AcceptanceFeature {
+  /** Feature name from the Feature: line */
+  name: string
+  /** Optional description after Feature line */
+  description: string
+  /** List of scenarios in the feature */
+  scenarios: GherkinScenario[]
+  /** Raw file content */
+  raw: string
 }

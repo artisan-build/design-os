@@ -1,7 +1,7 @@
-import { FileText, Map, ClipboardList, Database, Layout, Package, Boxes, Palette, PanelLeft, Wrench, ListChecks } from 'lucide-react'
+import { FileText, Map, ClipboardList, Database, Layout, Package, Boxes, Palette, PanelLeft, Wrench, ListChecks, FlaskConical } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 
-type EmptyStateType = 'overview' | 'roadmap' | 'spec' | 'data' | 'screen-designs' | 'data-shape' | 'design-system' | 'shell' | 'architecture' | 'issues' | 'export'
+type EmptyStateType = 'overview' | 'roadmap' | 'spec' | 'data' | 'screen-designs' | 'data-shape' | 'design-system' | 'shell' | 'architecture' | 'issues' | 'acceptance-tests' | 'export'
 
 interface EmptyStateProps {
   type: EmptyStateType
@@ -72,6 +72,12 @@ const config: Record<EmptyStateType, {
     title: 'No issues generated yet',
     command: '/generate-issues',
     description: 'Generate GitHub issues from your planning documents',
+  },
+  'acceptance-tests': {
+    icon: FlaskConical,
+    title: 'No acceptance tests defined yet',
+    command: '/write-acceptance-tests',
+    description: 'Write Gherkin acceptance tests for this section',
   },
   export: {
     icon: Package,

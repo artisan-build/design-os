@@ -6,6 +6,7 @@ import { EmptyState } from '@/components/EmptyState'
 import { PhaseWarningBanner } from '@/components/PhaseWarningBanner'
 import { SpecCard } from '@/components/SpecCard'
 import { DataCard } from '@/components/DataCard'
+import { AcceptanceTestsCard } from '@/components/AcceptanceTestsCard'
 import { StepIndicator, type StepStatus } from '@/components/StepIndicator'
 import { loadProductData } from '@/lib/product-loader'
 import { loadSectionData } from '@/lib/section-loader'
@@ -13,15 +14,16 @@ import { ChevronRight, Layout, Image, Download, ArrowRight, LayoutList } from 'l
 
 /**
  * Determine the status of each step based on what data exists
- * Steps: 1. Section Overview (Spec), 2. Sample Data, 3. Screen Designs, 4. Screenshots
+ * Steps: 1. Section Overview (Spec), 2. Sample Data, 3. Screen Designs, 4. Screenshots, 5. Acceptance Tests
  */
 function getStepStatuses(sectionData: ReturnType<typeof loadSectionData> | null): StepStatus[] {
   const hasSpec = !!sectionData?.specParsed
   const hasData = !!sectionData?.data
   const hasScreenDesigns = !!(sectionData?.screenDesigns && sectionData.screenDesigns.length > 0)
   const hasScreenshots = !!(sectionData?.screenshots && sectionData.screenshots.length > 0)
+  const hasAcceptanceTests = !!(sectionData?.acceptanceTests && sectionData.acceptanceTests.scenarios.length > 0)
 
-  const steps: boolean[] = [hasSpec, hasData, hasScreenDesigns, hasScreenshots]
+  const steps: boolean[] = [hasSpec, hasData, hasScreenDesigns, hasScreenshots, hasAcceptanceTests]
   const firstIncomplete = steps.findIndex((done) => !done)
 
   return steps.map((done, index) => {
@@ -32,14 +34,15 @@ function getStepStatuses(sectionData: ReturnType<typeof loadSectionData> | null)
 }
 
 /**
- * Check if the required steps for a section are complete (Spec, Data, Screen Designs)
+ * Check if the required steps for a section are complete (Spec, Data, Screen Designs, Acceptance Tests)
  * Screenshots are optional and don't count toward completion
  */
 function areRequiredStepsComplete(sectionData: ReturnType<typeof loadSectionData> | null): boolean {
   const hasSpec = !!sectionData?.specParsed
   const hasData = !!sectionData?.data
   const hasScreenDesigns = !!(sectionData?.screenDesigns && sectionData.screenDesigns.length > 0)
-  return hasSpec && hasData && hasScreenDesigns
+  const hasAcceptanceTests = !!(sectionData?.acceptanceTests && sectionData.acceptanceTests.scenarios.length > 0)
+  return hasSpec && hasData && hasScreenDesigns && hasAcceptanceTests
 }
 
 export function SectionPage() {
@@ -145,7 +148,7 @@ export function SectionPage() {
         </StepIndicator>
 
         {/* Step 4: Screenshots */}
-        <StepIndicator step={4} status={stepStatuses[3]} isLast={!requiredStepsComplete}>
+        <StepIndicator step={4} status={stepStatuses[3]}>
           {!sectionData?.screenshots || sectionData.screenshots.length === 0 ? (
             <Card className="border-stone-200 dark:border-stone-700 shadow-sm border-dashed">
               <CardContent className="py-8">
@@ -212,9 +215,14 @@ export function SectionPage() {
           )}
         </StepIndicator>
 
-        {/* Next Step - shown when required steps (Spec, Data, Screen Designs) are complete */}
+        {/* Step 5: Acceptance Tests */}
+        <StepIndicator step={5} status={stepStatuses[4]} isLast={!requiredStepsComplete}>
+          <AcceptanceTestsCard feature={sectionData?.acceptanceTests || null} />
+        </StepIndicator>
+
+        {/* Next Step - shown when required steps (Spec, Data, Screen Designs, Acceptance Tests) are complete */}
         {requiredStepsComplete && (
-          <StepIndicator step={5} status="current" isLast>
+          <StepIndicator step={6} status="current" isLast>
             <div className="space-y-3">
               {/* If there's a next section, show two options */}
               {nextSection ? (

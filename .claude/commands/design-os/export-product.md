@@ -74,6 +74,10 @@ product-plan/
 │       ├── 03-[second-section].md
 │       └── ...
 │
+├── features/                    # Acceptance tests (Gherkin format)
+│   ├── exspec.md                # exspec configuration
+│   └── [section-id].feature     # Per-section acceptance tests
+│
 ├── architecture/                # Technical decisions (if defined)
 │   └── tech-decisions.md
 │
@@ -932,6 +936,7 @@ This folder contains everything needed to implement [Product Name].
 - `data-shapes/` — UI data contracts (the shapes of data components expect)
 - `shell/` — Application shell components
 - `sections/` — All section components, types, sample data, and test specs
+- `features/` — Acceptance tests in Gherkin format (for exspec)
 
 ## How to Use This
 
@@ -961,14 +966,33 @@ Build the entire app in one session:
 
 ## Testing
 
-Each section includes a `tests.md` file with UI behavior test specs. For best results:
+### Acceptance Tests (exspec)
+
+The `features/` directory contains Gherkin acceptance tests for use with [exspec](https://github.com/mnapoli/exspec):
+
+```bash
+# Copy features to your project
+cp -r product-plan/features ./features
+
+# Run all acceptance tests
+npx exspec
+
+# Run tests for a specific section
+npx exspec features/[section-id].feature
+```
+
+exspec uses AI to interpret and run Gherkin tests without step definitions.
+
+### UI Behavior Tests
+
+Each section also includes a `tests.md` file with framework-agnostic test specs:
 
 1. Read `sections/[section-id]/tests.md` before implementing
 2. Write tests for key user flows
 3. Implement the feature to make tests pass
 4. Refactor while keeping tests green
 
-The test specs are **framework-agnostic** — they describe WHAT to test (user-facing behavior), not HOW. Adapt to your testing setup.
+The test specs describe WHAT to test (user-facing behavior), not HOW. Adapt to your testing setup.
 
 ## Tips
 
@@ -989,7 +1013,43 @@ Copy any `.png` files from:
 - `product/shell/` → `product-plan/shell/`
 - `product/sections/[section-id]/` → `product-plan/sections/[section-id]/`
 
-## Step 15: Create Zip File
+## Step 15: Export Acceptance Tests
+
+Create the `product-plan/features/` directory and export acceptance tests:
+
+1. **Create exspec configuration** at `product-plan/features/exspec.md`:
+
+```markdown
+# exspec configuration
+
+This folder contains Gherkin acceptance tests for use with [exspec](https://github.com/mnapoli/exspec).
+
+## Running Tests
+
+```bash
+# Run all tests
+npx exspec
+
+# Run tests for a specific section
+npx exspec features/[section-id].feature
+
+# Run with visible browser
+npx exspec --headed
+```
+
+## Test Organization
+
+Each section has its own `.feature` file named after the section ID.
+```
+
+2. **Copy acceptance test files** from each section:
+
+For each section that has an `acceptance.feature` file:
+- Copy `product/sections/[section-id]/acceptance.feature` → `product-plan/features/[section-id].feature`
+
+This places all acceptance tests in a flat `features/` directory, which is the format exspec expects.
+
+## Step 16: Create Zip File
 
 After generating all the export files, create a zip archive of the product-plan folder:
 
@@ -1003,7 +1063,7 @@ cd . && zip -r product-plan.zip product-plan/
 
 This creates `product-plan.zip` in the project root, which will be available for download on the Export page.
 
-## Step 16: Restart Vite Dev Server
+## Step 17: Restart Vite Dev Server
 
 After generating the export package, restart the Vite dev server so the zip file is available for download:
 
@@ -1014,7 +1074,7 @@ pkill -f "vite" 2>/dev/null; sleep 1; npm run dev &
 
 Wait a few seconds for the server to start before confirming completion.
 
-## Step 17: Confirm Completion
+## Step 18: Confirm Completion
 
 Let the user know:
 
@@ -1037,6 +1097,7 @@ Let the user know:
 - `data-shapes/` — UI data contracts and combined type reference
 - `shell/` — Application shell components
 - `sections/` — [N] section component packages with test specs
+- `features/` — Acceptance tests in Gherkin format (for exspec)
 
 **Download:**
 

@@ -7,7 +7,7 @@
  * - src/sections/[section-id]/[PageName].tsx  - Screen design pages
  */
 
-import type { SectionData, ParsedSpec, ParsedSectionData, ScenarioInfo, ScreenDesignInfo, ScreenshotInfo } from '@/types/section'
+import type { SectionData, ParsedSpec, ParsedSectionData, ScenarioInfo, ScreenDesignInfo, ScreenshotInfo, AcceptanceFeature, GherkinScenario, GherkinStep } from '@/types/section'
 import type { ComponentType } from 'react'
 
 // Load spec.md files from product/sections at build time
@@ -31,6 +31,13 @@ const screenDesignModules = import.meta.glob('/src/sections/*/*.tsx') as Record<
 // Load screenshot files from product/sections at build time
 const screenshotFiles = import.meta.glob('/product/sections/*/*.png', {
   query: '?url',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>
+
+// Load acceptance test feature files from product/sections at build time
+const featureFiles = import.meta.glob('/product/sections/*/acceptance.feature', {
+  query: '?raw',
   import: 'default',
   eager: true,
 }) as Record<string, string>
@@ -210,6 +217,114 @@ export function getScenarioData(parsed: ParsedSectionData | null, scenarioName?:
 }
 
 /**
+ * Parse a Gherkin .feature file into structured data
+ *
+ * Expected format:
+ * Feature: Feature Name
+ *   Optional description
+ *
+ *   Scenario: Scenario Name
+ *     Given some precondition
+ *     When an action is taken
+ *     Then an expected result
+ *     And another result
+ */
+export function parseAcceptanceFeature(content: string): AcceptanceFeature | null {
+  if (!content || !content.trim()) return null
+
+  try {
+    const lines = content.split('\n')
+    let featureName = ''
+    let featureDescription = ''
+    const scenarios: GherkinScenario[] = []
+    let currentScenario: GherkinScenario | null = null
+    let inFeatureDescription = false
+
+    for (const line of lines) {
+      const trimmed = line.trim()
+
+      // Skip empty lines and comments
+      if (!trimmed || trimmed.startsWith('#')) {
+        if (inFeatureDescription && !trimmed) {
+          inFeatureDescription = false
+        }
+        continue
+      }
+
+      // Feature line
+      if (trimmed.startsWith('Feature:')) {
+        featureName = trimmed.slice('Feature:'.length).trim()
+        inFeatureDescription = true
+        continue
+      }
+
+      // Scenario line (also handle Scenario Outline)
+      if (trimmed.startsWith('Scenario:') || trimmed.startsWith('Scenario Outline:')) {
+        inFeatureDescription = false
+        if (currentScenario) {
+          scenarios.push(currentScenario)
+        }
+        const prefix = trimmed.startsWith('Scenario Outline:') ? 'Scenario Outline:' : 'Scenario:'
+        currentScenario = {
+          name: trimmed.slice(prefix.length).trim(),
+          steps: [],
+        }
+        continue
+      }
+
+      // Step lines (Given/When/Then/And/But)
+      const stepMatch = trimmed.match(/^(Given|When|Then|And|But)\s+(.+)$/i)
+      if (stepMatch && currentScenario) {
+        const keyword = stepMatch[1].charAt(0).toUpperCase() + stepMatch[1].slice(1).toLowerCase()
+        currentScenario.steps.push({
+          keyword: keyword as GherkinStep['keyword'],
+          text: stepMatch[2],
+        })
+        continue
+      }
+
+      // Feature description (lines after Feature: but before first Scenario:)
+      if (inFeatureDescription && !trimmed.startsWith('Scenario')) {
+        featureDescription += (featureDescription ? '\n' : '') + trimmed
+      }
+    }
+
+    // Don't forget the last scenario
+    if (currentScenario) {
+      scenarios.push(currentScenario)
+    }
+
+    if (!featureName) return null
+
+    return {
+      name: featureName,
+      description: featureDescription.trim(),
+      scenarios,
+      raw: content,
+    }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Get acceptance tests for a specific section
+ */
+export function getSectionAcceptanceTests(sectionId: string): AcceptanceFeature | null {
+  const featurePath = `/product/sections/${sectionId}/acceptance.feature`
+  const content = featureFiles[featurePath]
+  if (!content) return null
+  return parseAcceptanceFeature(content)
+}
+
+/**
+ * Check if a section has acceptance tests
+ */
+export function hasSectionAcceptanceTests(sectionId: string): boolean {
+  return `/product/sections/${sectionId}/acceptance.feature` in featureFiles
+}
+
+/**
  * Get screen designs for a specific section
  */
 export function getSectionScreenDesigns(sectionId: string): ScreenDesignInfo[] {
@@ -285,6 +400,7 @@ export function loadSectionData(sectionId: string): SectionData {
     dataParsed: parseSectionData(data),
     screenDesigns: getSectionScreenDesigns(sectionId),
     screenshots: getSectionScreenshots(sectionId),
+    acceptanceTests: getSectionAcceptanceTests(sectionId),
   }
 }
 

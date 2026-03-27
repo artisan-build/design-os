@@ -52,6 +52,7 @@ Design the persistent navigation and layout that wraps all sections.
 - `/sample-data` — Update sample data and types (if already created)
 - `/design-screen` — Create screen designs
 - `/screenshot-design` — Capture screenshots
+- `/write-acceptance-tests` — Write Gherkin acceptance tests for the section
 
 ### 5. Architecture (`/create-tdd`)
 Document technical decisions for implementation — tech stack, architecture patterns, and integrations. This phase comes after sections are designed, allowing engineering to add technical context before export.
@@ -100,6 +101,7 @@ product/                           # Product definition (portable)
         ├── spec.md                # Section specification
         ├── data.json              # Sample data (supports _scenarios for multiple states)
         ├── types.ts               # TypeScript interfaces
+        ├── acceptance.feature     # Gherkin acceptance tests
         └── *.png                  # Screenshots
 
 src/
@@ -134,7 +136,8 @@ product-plan/                      # Export package (generated)
 ├── design-system/                 # Tokens, colors, fonts
 ├── data-shapes/                   # UI data contracts (types components expect)
 ├── shell/                         # Shell components
-└── sections/                      # Section components (with tests.md each)
+├── sections/                      # Section components (with tests.md each)
+└── features/                      # Gherkin acceptance tests (for exspec)
 ```
 
 ---
@@ -200,6 +203,7 @@ Design OS is organized around these main phases:
    - Sample data and TypeScript interfaces
    - Screen designs (React components)
    - **Scenarios** — Multiple data states for showing the same screen in different conditions (e.g., empty form vs completed form)
+   - **Acceptance Tests** — Gherkin feature files defining expected behavior for verification with [exspec](https://github.com/mnapoli/exspec)
 
 6. **Architecture** — The technical foundation (optional)
    - Tech stack choices (framework, database, hosting)
