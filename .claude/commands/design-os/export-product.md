@@ -19,6 +19,7 @@ Verify the minimum requirements exist:
 - `src/shell/components/AppShell.tsx` — Application shell
 - `/product/architecture/tech-decisions.md` — Technical decisions
 - At least one section with screen designs in `src/sections/[section-id]/`
+- At least one section with an `acceptance.feature` file in `product/sections/[section-id]/` (Gherkin tests for exspec)
 
 If required files are missing:
 
@@ -40,6 +41,7 @@ If recommended files are missing, show warnings but continue:
 - [ ] Application shell — Run `/design-shell` for navigation structure
 - [ ] Technical decisions — Run `/create-tdd` for tech stack and architecture
 - [ ] Screen designs — Run `/design-screen` for visual references
+- [ ] Acceptance tests — Run `/write-acceptance-tests` for Gherkin behavior specs
 
 You can proceed without these, but they help ensure a complete handoff."
 
@@ -75,9 +77,10 @@ Read all relevant files:
 7. `/product/shell/spec.md` (if exists)
 8. All files in `/product/architecture/` (not just tech-decisions.md)
 9. `/product/after-build-client-discussion.md` (if exists)
-10. For each section: `spec.md`, `data.json`, `types.ts`
-11. List screen design components in `src/sections/` and `src/shell/`
-12. List screenshots (`.png` files) in `product/sections/` and `product/shell/`
+10. For each section: `spec.md`, `data.json`, `types.ts`, `acceptance.feature` (if exists)
+11. For each section's `data.json`, detect whether it uses the `_scenarios` structure (multiple named data states) so scenarios can be documented downstream
+12. List screen design components in `src/sections/` and `src/shell/`
+13. List screenshots (`.png` files) in `product/sections/` and `product/shell/`
 
 ## Step 4: Create Export Directory Structure
 
@@ -129,11 +132,15 @@ product-plan/
 ├── sections/                    # Section packages
 │   └── [section-id]/
 │       ├── README.md
-│       ├── tests.md             # UI behavior test specs
+│       ├── tests.md             # UI behavior test specs (companion to acceptance.feature)
+│       ├── acceptance.feature   # Gherkin acceptance tests (if defined)
 │       ├── components/          # (component-first mode) or
 │       ├── screenshots/         # (architecture-first mode: visual references)
 │       ├── types.ts
-│       └── sample-data.json
+│       └── sample-data.json     # May include `_scenarios` for multiple data states
+│
+├── features/                    # Aggregated Gherkin acceptance tests (for exspec)
+│   └── [section-id].feature     # One file per section with acceptance.feature defined
 │
 ├── notes/                       # Additional context
 │   └── after-build-discussion.md  # (if exists)
@@ -238,7 +245,8 @@ Each milestone instruction file should begin with the following preamble (adapt 
 - Architecture decision records and integration documentation
 - Screen design mockups as visual references (React components for layout/styling reference only)
 - TypeScript interfaces defining the shape of data for each feature
-- Sample data showing realistic test scenarios
+- Sample data showing realistic test scenarios — some sections include `_scenarios` (multiple named data states like "Empty Form", "Completed", "Declined") that the UI must handle
+- Gherkin acceptance tests in `features/` defining required behavior (run with [exspec](https://github.com/mnapoli/exspec))
 - Configuration specs for business rules and thresholds
 
 **Your job:**
@@ -247,8 +255,10 @@ Each milestone instruction file should begin with the following preamble (adapt 
 - Use the screen designs as visual targets, not code to integrate
 - Wire up integrations as described in the architecture docs
 - Follow the database schema for data modeling
+- Make the acceptance tests in `features/` pass — they are the executable definition of done
+- Ensure every state described by `_scenarios` in sample data renders correctly
 
-The specifications describe WHAT to build. The architecture docs describe HOW the pieces connect. The screen designs show what the UI should LOOK like.
+The specifications describe WHAT to build. The architecture docs describe HOW the pieces connect. The screen designs show what the UI should LOOK like. The acceptance tests describe how it should BEHAVE.
 
 ---
 ```
@@ -264,14 +274,17 @@ The specifications describe WHAT to build. The architecture docs describe HOW th
 - Finished UI designs (React components with full styling)
 - Product requirements and user flow specifications
 - Design system tokens (colors, typography)
-- Sample data showing the shape of data components expect
-- Test specs focused on user-facing behavior
+- Sample data showing the shape of data components expect — some sections include `_scenarios` (multiple named data states the UI must support, e.g. "Empty Form", "Completed", "Declined")
+- Gherkin acceptance tests in `features/` defining required behavior (run with [exspec](https://github.com/mnapoli/exspec))
+- Test specs (`tests.md`) focused on user-facing UI behavior
 
 **Your job:**
 - Integrate these components into your application
 - Wire up callback props to your routing and business logic
 - Replace sample data with real data from your backend
 - Implement loading, error, and empty states
+- Make the acceptance tests in `features/` pass — they are the executable definition of done
+- Ensure every state described by `_scenarios` in sample data renders correctly
 
 The components are props-based — they accept data and fire callbacks. How you architect the backend, data layer, and business logic is up to you.
 
@@ -441,14 +454,28 @@ This section produces multiple routes:
 
 ## Testing
 
-See `product-plan/sections/[section-id]/tests.md` for UI behavior test specs.
+Two test artifacts are provided for this section:
+
+- **`product-plan/features/[section-id].feature`** — Gherkin acceptance tests. These are the authoritative behavior contract. Run them with [exspec](https://github.com/mnapoli/exspec): `npx exspec features/[section-id].feature`. The implementation is not done until these pass.
+- **`product-plan/sections/[section-id]/tests.md`** — UI behavior test specs (companion notes describing exact labels, empty states, and assertions to verify).
+
+[If the section's sample data uses `_scenarios`:]
+
+## Data Scenarios
+
+This section's sample data defines multiple states that the UI must handle:
+
+[List each scenario name from `_scenarios` with a one-line description]
+
+Each scenario is a complete data payload representing one state of the screen (e.g. empty form, completed form, error state). The implementation must render correctly for every scenario — verify by feeding each scenario's data into your components.
 
 ## Files to Reference
 
 - `product-plan/specs/[section-id]/spec.md` — Full specification
 - `product-plan/specs/[section-id]/types.ts` — TypeScript interfaces
 - `product-plan/sections/[section-id]/` — Screen designs / visual reference
-- `product-plan/sections/[section-id]/sample-data.json` — Test data
+- `product-plan/sections/[section-id]/sample-data.json` — Test data (with scenarios if defined)
+- `product-plan/sections/[section-id]/acceptance.feature` — Gherkin acceptance tests (also at `product-plan/features/[section-id].feature`)
 - `product-plan/architecture/` — Relevant architecture docs
 
 ## Done When
@@ -456,6 +483,8 @@ See `product-plan/sections/[section-id]/tests.md` for UI behavior test specs.
 - [ ] All user flows from the spec are implemented
 - [ ] Data shapes match the TypeScript interfaces
 - [ ] UI matches the visual reference
+- [ ] Every scenario in `sample-data.json` renders correctly (if `_scenarios` is defined)
+- [ ] Acceptance tests in `features/[section-id].feature` pass with exspec
 - [ ] Edge cases from the spec are handled
 - [ ] Responsive on mobile
 - [ ] [Section-specific acceptance criteria from spec]
@@ -515,7 +544,18 @@ Copy from `src/shell/components/` to `product-plan/shell/components/`:
 ### Types and Sample Data (both modes)
 
 - Copy `product/sections/[section-id]/types.ts` to `product-plan/sections/[section-id]/types.ts`
-- Copy `product/sections/[section-id]/data.json` to `product-plan/sections/[section-id]/sample-data.json`
+- Copy `product/sections/[section-id]/data.json` to `product-plan/sections/[section-id]/sample-data.json` — preserve the `_meta` and `_scenarios` keys exactly as written; downstream READMEs and instructions reference them by name.
+
+## Step 11.5: Copy Acceptance Tests
+
+For each section that has `product/sections/[section-id]/acceptance.feature`:
+
+1. Copy it to `product-plan/sections/[section-id]/acceptance.feature` (keeps it adjacent to its spec and screen designs)
+2. Also copy it to `product-plan/features/[section-id].feature` (the aggregated location exspec runs against — `npx exspec features/[section-id].feature`)
+
+Both copies are intentional: the per-section copy keeps the test next to the spec it tests so a reader can browse them together; the `features/` copy is the runnable bundle that the implementation codebase will execute.
+
+If a section has no `acceptance.feature`, skip it for that section but still create the `features/` directory if at least one section has acceptance tests defined. If no section has acceptance tests, omit `features/` entirely and note this in the completion summary so the user knows tests are missing.
 
 ## Step 12: Copy Additional Context Files
 
@@ -568,23 +608,52 @@ See `screenshot.png` for the target UI design.
 | Action | Triggered When |
 |--------|---------------|
 [From Props interface]
+
+## Sample Data Scenarios
+
+[If `sample-data.json` contains a `_scenarios` key, list each scenario with the description from spec/data context. Otherwise: "Sample data is provided as a single state in `sample-data.json`."]
+
+| Scenario | What it represents |
+|----------|--------------------|
+[One row per scenario name, e.g. `Empty Form` — "User has not entered any data yet"]
+
+The implementation must render correctly for every scenario listed above.
+
+## Acceptance Tests
+
+[If `acceptance.feature` exists in this section:]
+Behavior is defined in Gherkin format in `acceptance.feature` (also bundled at `product-plan/features/[section-id].feature`). Run with [exspec](https://github.com/mnapoli/exspec):
+
+```bash
+npx exspec features/[section-id].feature
+```
+
+Scenarios covered:
+[List each Scenario name from acceptance.feature with a one-line description]
+
+[If no acceptance.feature exists:]
+No acceptance tests have been defined for this section yet. Consider running `/write-acceptance-tests` in Design OS before exporting again.
 ```
 
 ## Step 14: Generate Section Test Instructions
 
-For each section, create `product-plan/sections/[section-id]/tests.md` with UI behavior test specs based on the section's spec, user flows, and UI design.
+For each section, create `product-plan/sections/[section-id]/tests.md` with UI behavior test specs based on the section's spec, user flows, UI design, and (if present) acceptance tests.
+
+`tests.md` is a **companion** to `acceptance.feature`, not a replacement. The Gherkin file is the executable behavior contract; `tests.md` adds context the AI runner benefits from — exact UI text, edge cases, scenario-by-scenario expectations — that would clutter Gherkin.
 
 Follow the same test spec generation guidelines from the original export command:
 
 1. Read the spec.md thoroughly — extract all user flows and requirements
-2. Study the screen design components — note exact button labels, field names, UI text
-3. Review types.ts — understand the data shapes for assertions
-4. Include specific UI text — tests should verify exact labels, messages, placeholders
-5. Cover success and failure paths — every action should have both tested
-6. Always test empty states — primary lists with no items, parent records with no children
-7. Be specific about assertions
-8. Include edge cases — boundary conditions, transitions between empty and populated states
-9. Stay framework-agnostic — describe WHAT to test, not HOW
+2. Read `acceptance.feature` (if present) — every Scenario there must have a corresponding entry in tests.md with concrete UI text and assertions
+3. Study the screen design components — note exact button labels, field names, UI text
+4. Review types.ts — understand the data shapes for assertions
+5. If `sample-data.json` contains `_scenarios`, write one test block per scenario covering the visible state for that data
+6. Include specific UI text — tests should verify exact labels, messages, placeholders
+7. Cover success and failure paths — every action should have both tested
+8. Always test empty states — primary lists with no items, parent records with no children
+9. Be specific about assertions
+10. Include edge cases — boundary conditions, transitions between empty and populated states
+11. Stay framework-agnostic — describe WHAT to test, not HOW
 
 ## Step 15: Generate Design System Files
 
@@ -624,8 +693,11 @@ After reading these, also review:
 - **@product-plan/specs/** — Full section specifications with user flows and business rules
 - **@product-plan/design-system/** — Color and typography tokens
 - **@product-plan/shell/** — Application shell specification and visual reference
-- **@product-plan/sections/** — Section screen designs, types, sample data, and test specs
+- **@product-plan/sections/** — Section screen designs, types, sample data (with `_scenarios` for multi-state screens), and test specs
+- **@product-plan/features/** — Gherkin acceptance tests (run with [exspec](https://github.com/mnapoli/exspec)) — these are the executable definition of done
 - **@product-plan/notes/** — Additional context and decisions (if present)
+
+**Important:** When `sample-data.json` contains a `_scenarios` key, the UI must render correctly for every named scenario (e.g. "Empty Form", "Completed", "Declined"). When `features/[section-id].feature` exists for a section, every scenario in that file must pass via `npx exspec features/[section-id].feature` before that section is considered complete.
 
 ## Before You Begin
 
@@ -669,8 +741,9 @@ Also review the section assets:
 - **@product-plan/specs/SECTION_ID/types.ts** — TypeScript interfaces (data shapes)
 - **@product-plan/sections/SECTION_ID/README.md** — Feature overview and design intent
 - **@product-plan/sections/SECTION_ID/tests.md** — UI behavior test specs
+- **@product-plan/sections/SECTION_ID/acceptance.feature** — Gherkin acceptance tests (if present; also bundled at `@product-plan/features/SECTION_ID.feature`)
 - **@product-plan/sections/SECTION_ID/components/** — Screen design visual references
-- **@product-plan/sections/SECTION_ID/sample-data.json** — Test data
+- **@product-plan/sections/SECTION_ID/sample-data.json** — Test data; check for `_scenarios` (multiple named data states the UI must render correctly)
 
 And any architecture docs referenced in the milestone instructions:
 - **@product-plan/architecture/** — Relevant integration and configuration docs
@@ -686,6 +759,13 @@ Review all the provided files, then ask me clarifying questions about:
 Lastly, ask me if I have any additional notes for this implementation.
 
 Once I answer your questions, proceed with implementation.
+
+## Definition of Done
+
+The section is complete when:
+- All callbacks in the Props interface are wired up
+- Every state in `sample-data.json` `_scenarios` (if defined) renders correctly
+- Every Scenario in `acceptance.feature` passes when run with `npx exspec features/SECTION_ID.feature`
 ```
 
 ## Step 18: Generate README.md
@@ -718,7 +798,10 @@ This folder contains everything needed to implement [Product Name].
 **Design Assets:**
 - `design-system/` — Colors, fonts, design tokens
 - `shell/` — Application shell specification and visual reference
-- `sections/` — Section screen designs, test specs, and sample data
+- `sections/` — Section screen designs, test specs, sample data (may include `_scenarios` for multi-state screens), and per-section acceptance.feature
+
+**Acceptance Tests:**
+- `features/` — Gherkin acceptance tests aggregated for [exspec](https://github.com/mnapoli/exspec). Run with `npx exspec features/[section-id].feature`. These define the executable contract for "done."
 
 **Notes:**
 - `notes/` — Post-build discussion items and deferred decisions (if any)
@@ -750,13 +833,20 @@ Build the entire app in one session:
 
 ## Testing
 
-Each section includes a `tests.md` file with UI behavior test specs. The specs are **framework-agnostic** — they describe WHAT to test, not HOW.
+Two artifacts define correct behavior for each section:
+
+- **`features/[section-id].feature`** — Gherkin acceptance tests, runnable with [exspec](https://github.com/mnapoli/exspec): `npx exspec features/[section-id].feature`. These are the executable contract — implementation is not done until they pass.
+- **`sections/[section-id]/tests.md`** — Companion UI behavior specs with concrete labels, empty-state assertions, and per-scenario expectations. Framework-agnostic — they describe WHAT to test, not HOW.
+
+If a section's `sample-data.json` includes a `_scenarios` key, the UI must render correctly for every named state listed (e.g. "Empty Form", "Completed", "Declined").
 
 ## Tips
 
 - **Read the specs first** — The `specs/` directory contains the authoritative implementation details
 - **Use the architecture docs** — They document integration patterns, business rules, and configuration
 - **Screen designs are visual references** — Use them to understand the intended UI, then build with your target framework
+- **Run the acceptance tests early and often** — `features/` is where "done" is defined. Wire up exspec before writing UI code so you have a feedback loop.
+- **Honor every scenario** — `_scenarios` in `sample-data.json` enumerates the states the UI must support; missing one is a bug
 - **Check the notes/** — Contains decisions made during planning that may need client discussion
 
 ---
@@ -786,6 +876,8 @@ Let the user know what was created, listing:
 - Number of section specs included
 - Number of section screen designs included
 - Number of screenshots included
+- Number of `acceptance.feature` files copied to `features/` (and a list of any sections still missing acceptance tests, so the user knows where to run `/write-acceptance-tests`)
+- Number of sections whose `sample-data.json` uses `_scenarios`, with the total count of distinct scenarios across the export
 - Whether after-build discussion notes were included
 - The prompts available for implementation
 
@@ -793,6 +885,8 @@ Let the user know what was created, listing:
 
 - Always include ALL architecture files, not just tech-decisions.md
 - Always include raw spec.md files — generated READMEs summarize but don't replace them
+- Always copy `acceptance.feature` files (when present) to BOTH `sections/[section-id]/acceptance.feature` and `features/[section-id].feature`
+- Preserve `_meta` and `_scenarios` keys in `sample-data.json` exactly as authored — downstream READMEs, instructions, and tests reference them by name
 - In architecture-first mode, screen design components are visual references, not integration code
 - Include product-overview.md context with every implementation session
 - The export is self-contained — no dependencies on Design OS
